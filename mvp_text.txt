@@ -1,0 +1,200 @@
+■ PropManager MVP
+Fonctionnalités exactes à développer — tout ce dont tu as besoin, rien de superflu.
+5 modules
+~22 jours
+0 €
+fonctionnels
+de développement
+pour lancer
+■ Écrans & Champs
+Chaque module liste les pages à créer et les champs associés.
+■
+Authentification
+Chaque propriétaire a son propre espace sécurisé
+■ Inscription
+[ Email ] [ Mot de passe ] [ Nom complet ]
+■ Un compte = un propriétaire, ses données sont isolées
+■ Connexion
+[ Email ] [ Mot de passe ]
+■ Redirection vers le dashboard après connexion
+■ Mot de passe oublié
+[ Email ]
+■ Email de réinitialisation automatique (Supabase)
+■
+Dashboard
+Vue d'ensemble en un coup d'œil
+■ Page d'accueil
+[ Nb de biens ] [ Nb de locataires actifs ] [ Loyers du mois (reçus / attendus) ] [ Biens vacants ] [ Paiements en retard (alerte
+rouge) ]
+■ Tout calculé automatiquement depuis la base de données
+
+--- PAGE ---
+■
+Gestion des Biens
+Ajouter, modifier, archiver ses logements
+■ Liste des biens
+[ Nom/adresse ] [ Type (studio, F2, maison…) ] [ Loyer charges comprises ] [ Statut (loué / vacant) ] [ Locataire actuel ]
+■ Vue tableau avec filtres et recherche
+■ Fiche bien
+[ Adresse complète ] [ Surface (m²) ] [ Nombre de pièces ] [ Type de bien ] [ Loyer hors charges ] [ Charges ] [ Dépôt de garantie
+] [ Date d'acquisition ] [ Notes libres ]
+■ + liste des locataires passés
+■ Ajouter / Modifier un bien
+[ Formulaire simple ] [ Upload de photos (optionnel) ]
+■ Validation côté client + côté serveur
+■
+Gestion des Locataires
+Profil complet de chaque locataire
+■ Liste des locataires
+[ Nom ] [ Bien loué ] [ Date d'entrée ] [ Loyer ] [ Statut paiement du mois ]
+■ Filtrable par bien ou statut
+■ Fiche locataire
+[ Nom, prénom ] [ Email ] [ Téléphone ] [ Date de naissance ] [ Bien associé ] [ Date d'entrée / sortie ] [ Montant du loyer ] [
+Dépôt de garantie versé ] [ Documents uploadés (CNI, contrat…) ]
+■ Historique des paiements visible ici
+■ Ajouter / Modifier un locataire
+[ Formulaire ] [ Upload de documents (PDF, image) ]
+■ Lié obligatoirement à un bien existant
+■
+Suivi des Paiements
+Tracker chaque loyer mois par mois
+■ Tableau des paiements
+[ Mois ] [ Bien ] [ Locataire ] [ Montant attendu ] [ Montant reçu ] [ Statut (Payé / Partiel / Impayé) ] [ Date de paiement ] [ Mode
+(virement, chèque, espèces) ]
+■ Généré automatiquement chaque mois pour tous les locataires actifs
+■ Enregistrer un paiement
+[ Sélection du mois ] [ Montant reçu ] [ Date ] [ Mode de paiement ] [ Note ]
+■ Simple clic pour marquer comme payé
+■ Quittance de loyer
+[ Génération PDF automatique ] [ Nom bailleur + locataire ] [ Période ] [ Montant HC + charges ]
+■ Téléchargeable et/ou envoyé par email
+
+--- PAGE ---
+■
+Baux & Documents
+Centraliser tous les documents importants
+■ Modèle de bail
+[ Bail vide (loi ALUR) ] [ Bail meublé ] [ Pré-rempli avec les infos du bien + locataire ]
+■ Export PDF — pas de signature électronique en MVP
+■ Documents par bien
+[ Upload libre de fichiers ] [ Catégorie (bail, DPE, assurance, facture…) ] [ Date du document ]
+■ Stockage Supabase Storage
+■■ Base de données
+5 tables suffisent pour tout le MVP. Les flèches → indiquent les clés étrangères.
+users
+id (uuid) email full_name created_at
+→ Géré par Supabase Auth automatiquement
+properties
+id user_id → name address type surface rooms rent charges deposit status notes created_at
+→ user_id = clé étrangère vers users (isolation des données)
+tenants
+id user_id → property_id → first_name last_name email phone birthdate entry_date exit_date
+rent_amount deposit_paid active
+→ Un locataire est toujours lié à un bien
+payments
+id tenant_id → property_id → period_month period_year amount_expected amount_paid paid_at
+payment_method status notes
+→ Généré auto chaque mois pour chaque locataire actif
+documents
+id user_id → property_id → tenant_id → category filename storage_path uploaded_at
+→ Fichiers stockés dans Supabase Storage
+
+--- PAGE ---
+■ Sécurité (Row Level Security)
+Activer le RLS dans Supabase sur chaque table avec la règle :
+WHERE user_id = auth.uid()
+Chaque propriétaire ne voit que ses propres données, sans code supplémentaire.
+■■ Stack Technique
+Choisie pour la simplicité, la rapidité et le coût zéro au démarrage.
+Couche
+Technologie
+Frontend
+Next.js 14 (App Router) + Tailwind CSS
+Base de données
+PostgreSQL via Supabase (gratuit pour démarrer)
+Auth
+Supabase Auth (email/mot de passe)
+Fichiers/PDF
+Supabase Storage
+Hébergement
+Vercel (gratuit)
+Coût total
+0 € / mois jusqu'à ~500 utilisateurs
+■ Librairies npm indispensables
+Package
+Utilité
+@supabase/supabase-js
+Connexion à la base de données + auth
+@react-pdf/renderer
+Générer les quittances et baux en PDF
+react-hook-form
+Gestion des formulaires sans douleur
+zod
+Validation des données côté client
+date-fns
+Manipulation des dates (mois, périodes)
+recharts
+Graphiques pour le dashboard
+■ Ordre de Développement
+Chaque étape s'appuie sur la précédente. Total estimé : ~22 jours.
+#
+Tâche
+Durée
+Conseil
+ 1
+Créer le projet Next.js + configurer
+Supabase
+ 1 jour
+npx create-next-app + connexion Supabase
+Dashboard
+ 2
+Créer les tables en base de données
+ 1 jour
+Directement dans l'interface Supabase, pas de
+code
+
+--- PAGE ---
+3
+Page Inscription / Connexion
+ 2 jours
+Supabase Auth gère tout, tu fais juste le formulaire
+ 4
+CRUD des Biens (liste + fiche + formulaire)
+ 3 jours
+Commence par là — c'est la base de tout
+ 5
+CRUD des Locataires
+ 3 jours
+Même logique que les biens, tu réutilises le code
+ 6
+Suivi des paiements + enregistrement
+ 3 jours
+La valeur principale du produit
+ 7
+Génération PDF (quittances + bail)
+ 3 jours
+Librairie react-pdf ou puppeteer
+ 8
+Dashboard avec les stats
+ 2 jours
+Simples requêtes SQL COUNT/SUM sur tes tables
+ 9
+Upload de documents
+ 2 jours
+Supabase Storage + input file
+10
+Tests + déploiement Vercel
+ 2 jours
+vercel deploy — c'est littéralement une commande
+■■ Ce qu'on ne fait PAS dans le MVP
+Ces fonctionnalités viennent après, une fois que de vrais utilisateurs valident le produit.
+✕ Signature électronique légale
+✕ Intelligence artificielle
+✕ Paiement en ligne des loyers
+✕ Mode multi-propriétaires / agence
+✕ Application mobile native
+✕ Comptabilité avancée / FEC
+✕ Publication sur SeLoger/LeBonCoin
+✕ Notifications email automatiques
+ PropManager MVP — Plan de développement complet
+ Généré avec Claude · Anthropic · 2026
