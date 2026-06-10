@@ -4,6 +4,7 @@ import "./globals.css";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({
             <AppLayout>{children}</AppLayout>
           </SettingsProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
