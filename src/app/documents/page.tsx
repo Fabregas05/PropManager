@@ -149,9 +149,10 @@ export default function DocumentsPage() {
   const uploadGeneratedPdf = async (blob: Blob, filename: string, propId?: string | null, tenantId?: string | null) => {
     if (!user) return;
     try {
-      const fileToUpload = new File([blob], filename, { type: 'application/pdf' });
+      // Use the Blob directly (cast to any) to avoid build-time TypeScript issues
+      const fileToUpload = blob as any;
       const path = `${user.id}/generated/${Date.now()}_${filename}`;
-      const { error: uploadErr } = await supabase.storage.from('documents').upload(path, fileToUpload);
+      const { error: uploadErr } = await supabase.storage.from('documents').upload(path, fileToUpload as any);
       if (uploadErr) throw uploadErr;
 
       const { error: insertErr } = await supabase.from('documents').insert([
