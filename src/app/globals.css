@@ -24,3 +24,27 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Visual tweaks for mobile sidebar and UI polish */
+.sidebar-backdrop {
+  backdrop-filter: blur(6px);
+}
+
+.mobile-sidebar-paper {
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  box-shadow: 0 20px 40px rgba(2,6,23,0.6);
+  will-change: transform, box-shadow;
+}
+
+/* subtle content card shadow */
+.card-shadow {
+  box-shadow: 0 6px 18px rgba(15,23,42,0.08);
+}
+
+/* small utility for smoother focus outlines on interactive elements */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+  border-radius: 0.5rem;
+}

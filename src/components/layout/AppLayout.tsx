@@ -4,10 +4,24 @@ import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (sidebarOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [sidebarOpen]);
 
   const isAuthPage = pathname === "/login" || pathname === "/register";
 
@@ -28,9 +42,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full bg-slate-50 text-slate-900">
-      <Sidebar />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
-        <Header />
+        <Header onToggleSidebar={() => setSidebarOpen((s) => !s)} />
         <main className="flex-1 p-6 md:p-8 overflow-x-hidden">
           {children}
         </main>

@@ -3,13 +3,13 @@
 import { Search, Bell, Menu, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
-export function Header() {
+export function Header({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
   const { profile, signOut } = useAuth();
 
   return (
     <header className="h-20 bg-white/70 backdrop-blur-md border-b border-slate-200/50 flex items-center justify-between px-8 sticky top-0 z-30 transition-all">
       <div className="flex items-center gap-4 flex-1">
-        <button className="p-2 hover:bg-slate-100/80 rounded-xl text-slate-500 transition-colors md:hidden">
+        <button onClick={onToggleSidebar} className="p-2 hover:bg-slate-100/80 rounded-xl text-slate-500 transition-colors md:hidden">
           <Menu size={24} />
         </button>
         <div className="relative max-w-md w-full hidden md:block group">

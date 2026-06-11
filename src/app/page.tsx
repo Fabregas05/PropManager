@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useSettings } from "@/context/SettingsContext";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Building2, Users, Wallet, TrendingUp, Download, Plus, Calendar, AlertCircle } from "lucide-react";
+import LineChart from "@/components/dashboard/LineChart";
+import ProgressBar from "@/components/dashboard/ProgressBar";
 import Link from "next/link";
 
 interface MonthlyStat {
@@ -204,44 +206,18 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <div className="h-[280px] flex items-end justify-between px-2 relative mt-4">
-            {/* Horizontal Grid lines */}
-            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-              {[0,1,2,3,4].map(i => (
-                <div key={i} className="w-full border-t border-slate-100/80"></div>
-              ))}
-            </div>
-            
-            {/* Chart Bars */}
+          <div className="h-[280px] mt-4">
             {loading ? (
-              <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm font-medium">
+              <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm font-medium">
                 Chargement de l'historique...
               </div>
             ) : chartData.length === 0 || chartData.every(d => d.amount === 0) ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 text-sm font-medium p-4">
+              <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 text-sm font-medium p-4">
                 <AlertCircle className="mb-2 text-indigo-500" size={24} />
                 Aucun historique de paiement enregistré. Générez des échéances et encaissez des loyers.
               </div>
             ) : (
-              chartData.map((d, i) => {
-                // Find maximum amount to calculate heights relatively
-                const maxVal = Math.max(...chartData.map(c => c.amount), 1);
-                const heightPercent = Math.max((d.amount / maxVal) * 90, 5); // min 5% for visibility
-
-                return (
-                  <div key={i} className="w-12 flex flex-col items-center gap-3 relative z-10 group cursor-pointer">
-                    {/* Tooltip on hover */}
-                    <div className="absolute -top-12 bg-slate-900 text-white text-xs font-semibold py-1.5 px-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 shadow-lg pointer-events-none whitespace-nowrap">
-                      {formatCurrency(d.amount)}
-                    </div>
-                    {/* Bar */}
-                    <div className="w-full bg-indigo-100/50 rounded-t-xl relative overflow-hidden group-hover:bg-indigo-200/50 transition-colors" style={{ height: `200px` }}>
-                      <div className="absolute bottom-0 w-full bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t-xl group-hover:from-indigo-500 group-hover:to-indigo-300 transition-colors" style={{ height: `${heightPercent}%` }}></div>
-                    </div>
-                    <span className="text-xs font-semibold text-slate-500">{d.month}</span>
-                  </div>
-                );
-              })
+              <LineChart data={chartData.map(d => ({ label: d.month, value: d.amount }))} height={240} />
             )}
           </div>
         </div>
@@ -272,7 +248,15 @@ export default function Dashboard() {
             )}
           </div>
           
-          <div className="mt-8 space-y-3">
+          <div className="mt-6 space-y-4 w-full">
+            <div className="mb-2">
+              <ProgressBar label="Recouvré ce mois" value={receivedPercentage} color={'linear-gradient(90deg,#10B981,#06B6D4)'} />
+            </div>
+            <div className="mb-2">
+              <ProgressBar label="Taux d'occupation" value={occupancyRate} color={'linear-gradient(90deg,#F59E0B,#EF4444)'} />
+            </div>
+
+            <div className="mt-4 space-y-3">
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2 text-slate-600 font-medium"><span className="w-3 h-3 rounded-full bg-emerald-500"></span> Payés</div>
               <span className="font-bold text-slate-900">{loading ? "..." : paidCount}</span>
@@ -291,5 +275,6 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+  </div>
   );
 }
